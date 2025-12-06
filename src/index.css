@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+@import "tailwindcss";
+
+
+@font-face {
+  font-family: 'Annexxus';
+  src: url('/Fonts/annexxus/Annexxus-Regular.woff2') format('woff2'),
+    url('/Fonts/annexxus/Annexxus-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+.font-annexxus {
+  font-family: 'Annexxus', sans-serif;
+}
+
+:root {
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  color-scheme: dark;
+}
+
+/* Links con transiciones suaves */
+a {
+  transition: all 0.2s ease-in-out;
+}
+
+a:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+/* Ajustes generales */
+html {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #E6E7D9;
+  color: #1a1a1a;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin-slow {
+  animation: spin-slow 14s linear infinite;
+}
+
+@media (max-width: 450px) {
+  .flex-col-xs {
+    flex-direction: column !important;
+    gap: 0.5rem;
+  }
+
+  .text-xl-xs {
+    font-size: 1.25rem !important;
+  }
+
+  .items-start-xs {
+    align-items: flex-start !important;
+  }
+
+  .mt-2-xs {
+    margin-top: 0.5rem !important;
+  }
+}
+
+@keyframes bounce {
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0.8);
+    opacity: 0.6;
+  }
+
+  40% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+
+.dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  background-color: #4B5563;
+  border-radius: 9999px;
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+.dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
