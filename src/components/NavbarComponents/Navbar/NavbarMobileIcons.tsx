@@ -11,7 +11,10 @@ const NavbarMobileIcons: React.FC<NavbarMobileIconsProps> = ({
   <div className="md:hidden navbar-mobile flex items-center space-x-4 z-40">
     {user && (
       <button
-        onMouseDown={(e) => e.preventDefault()}
+        onMouseDown={(e) => {
+          e.preventDefault()
+          e.stopPropagation();
+        }}
         onClick={() => {
           if (userMenuOpen) {
             setUserMenuOpen(false);

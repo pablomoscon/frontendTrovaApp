@@ -1,4 +1,3 @@
-// components/Shared/FadeImage.tsx
 import React from 'react';
 import { FadeImageProps } from '../../Interfaces/SharedInterface';
 

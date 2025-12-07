@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSearchAlbums } from './useSearchAlbums';
 import { usePageAndSearch } from '../shared/usePageAndSearch';
 
@@ -16,19 +16,16 @@ export const useSearchAlbumsResults = (
     } = usePageAndSearch(pageKey, initialQuery);
 
     const [hasSearched, setHasSearched] = useState(!!initialQuery);
+    const prevQueryRef = useRef(initialQuery);
 
-
-    const isInitialQueryChanged = useMemo(
-        () => initialQuery !== searchTerm,
-        [initialQuery, searchTerm]
-    );
-
+    // Detecta cambios en initialQuery y actualiza searchTerm y page
     useEffect(() => {
-        if (isInitialQueryChanged) {
+        if (prevQueryRef.current !== initialQuery) {
+            prevQueryRef.current = initialQuery;
             setSearchTerm(initialQuery);
             setPage(1);
         }
-    }, [isInitialQueryChanged, initialQuery, setPage, setSearchTerm]);
+    }, [initialQuery, setPage, setSearchTerm]);
 
     const { albums, isLoading, error, totalPages } = useSearchAlbums(
         searchTerm,

@@ -22,6 +22,7 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
 
       <img
         src='/assets/catalogo_trova.webp'
+        key='main-image'
         alt='Colección Trova'
         onLoad={() => setLoaded(true)}
         onError={(e) => {

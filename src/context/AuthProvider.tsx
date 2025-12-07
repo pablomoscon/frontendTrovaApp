@@ -1,37 +1,31 @@
-import { ReactNode, useMemo, useEffect } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { AuthContext } from './AuthContext';
 import { useAuthState } from '../hooks/auth/useAuthState';
-import { loadStoredUser } from '../services/authService';
-import { getValidUserOrNull } from '../utils/validateUserTokenUtils';
-import { selectIsAdmin, selectIsAuthenticated, selectToken } from '../utils/authSelectorsUtils';
+import {
+  selectIsAdmin,
+  selectIsAuthenticated,
+  selectToken,
+} from '../utils/authSelectorsUtils';
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { user, login, logout, setUser } = useAuthState();
+interface AuthProviderProps {
+  children: ReactNode;
+}
 
-  // valores derivados
-  const token = selectToken(user);
-  const isAdmin = selectIsAdmin(user);
-  const isAuthenticated = selectIsAuthenticated(user);
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const { user, login, logout } = useAuthState();
 
-  // valor memoizado del context
+  // Memoizar el value para que el context no cause re-render infinito
   const value = useMemo(
     () => ({
       user,
       login,
       logout,
-      token,
-      isAdmin,
-      isAuthenticated,
+      token: selectToken(user),
+      isAdmin: selectIsAdmin(user),
+      isAuthenticated: selectIsAuthenticated(user),
     }),
-    [user, login, logout, token, isAdmin, isAuthenticated]
+    [user, login, logout]
   );
-
-  // sincronización inicial con localStorage
-  useEffect(() => {
-    const storedUser = loadStoredUser();
-    const validUser = getValidUserOrNull(storedUser);
-    setUser(validUser);
-  }, [setUser]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

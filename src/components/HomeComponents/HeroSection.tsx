@@ -1,8 +1,6 @@
 import React from 'react';
 import FadeImageLoader from './FadeImageLoader';
 
-
-
 const HeroSection: React.FC = () => {
   return (
     <div className='flex flex-col items-center min-h-screen bg-[#E5E6E4] text-gray-900 px-10 pt-50 sm:pt-50 pb-20 sm:pb-30'>

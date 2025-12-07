@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useCloseOnOutside } from '../shared/useCloseOnOutside';
 import { useCloseOnResize } from '../shared/useCloseOnResize';
 import { useCloseOnRouteChange } from '../shared/useCloseOnRouteChange';
@@ -11,14 +11,9 @@ export const useNavbarEffects = ({
   setSearchOpen,
   setSearchValue,
 }: UseNavbarEffectsProps) => {
-  const stableCloseAllMenus = useCallback(() => {
-    closeAllMenus();
-  }, [closeAllMenus]);
-
-  useCloseOnOutside(wrapperRef, stableCloseAllMenus);
-  useCloseOnResize(stableCloseAllMenus);
-  useCloseOnRouteChange(stableCloseAllMenus);
-
+  useCloseOnOutside(wrapperRef, closeAllMenus);
+  useCloseOnResize(closeAllMenus);
+  useCloseOnRouteChange(closeAllMenus);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

@@ -3,12 +3,14 @@ import { User } from "../../Interfaces/UserInterface";
 import { getValidUserOrNull } from "../../utils/validateUserTokenUtils";
 import { clearUser, loadStoredUser, saveUser } from "../../services/authService";
 
-
 export const useAuthState = () => {
-    const [user, setUser] = useState<User | null>(() =>
-        getValidUserOrNull(loadStoredUser())
-    );
+    // Inicializar desde localStorage y validar
+    const [user, setUser] = useState<User | null>(() => {
+        const stored = loadStoredUser();
+        return getValidUserOrNull(stored);
+    });
 
+    // login y logout memoizados para no romper useMemo del provider
     const login = useCallback((userData: User) => {
         saveUser(userData);
         setUser(userData);
@@ -19,10 +21,5 @@ export const useAuthState = () => {
         setUser(null);
     }, []);
 
-    return {
-        user,
-        login,
-        logout,
-        setUser,
-    };
+    return { user, login, logout };
 };

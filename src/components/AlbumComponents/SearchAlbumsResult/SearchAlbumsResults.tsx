@@ -5,9 +5,9 @@ import { useScroll } from '../../../hooks/shared/useScroll';
 import Spinner from '../../Shared/Spinner';
 import AlbumSongsModal from '../AlbumCard/AlbumSongsModal';
 import { useFetchAlbumById } from '../../../hooks/album/useFetchAlbumById';
-import { useSearchAlbumsResults } from '../../../hooks/album/useSearchAlbumsResults';
 import { useFetchAlbumSongs } from '../../../hooks/song/useFetchAlbumSongs';
 import AlbumList from '../AlbumList/AlbumList';
+import { useSearchAlbumsResults } from '../../../hooks/album/useSearchAlbumsResults';
 
 const SearchAlbumsResults: React.FC<SearchAlbumsResultsProps> = ({
   initialQuery = '',
@@ -24,14 +24,8 @@ const SearchAlbumsResults: React.FC<SearchAlbumsResultsProps> = ({
   const [shouldScroll, setShouldScroll] = useState(false);
 
   const offset = window.innerWidth < 640 ? 90 : 240;
-  const prevQueryRef = useRef(query);
 
-  if (prevQueryRef.current !== query) {
-    prevQueryRef.current = query;
-    setShouldScroll(true);
-    setPage(1);
-  }
-
+  // Hook para hacer scroll cuando corresponde
   useScroll(shouldScroll ? (listTopRef as RefObject<HTMLElement>) : undefined, {
     deps: [page, query],
     behavior: 'auto',
@@ -68,7 +62,6 @@ const SearchAlbumsResults: React.FC<SearchAlbumsResultsProps> = ({
     setSelectedAlbumId(null);
   };
 
-
   let content;
 
   if (isLoading) {
@@ -88,7 +81,7 @@ const SearchAlbumsResults: React.FC<SearchAlbumsResultsProps> = ({
       <>
         <div ref={listTopRef} />
         <AlbumList
-          albums={albums ?? []}
+          albums={albums}
           onClick={openModal}
           page={page}
           totalPages={totalPages}

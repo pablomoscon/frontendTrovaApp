@@ -1,20 +1,18 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { ArtistEditModalProps } from '../../../Interfaces/ArtistInterface';
-import { useDetailsArtist } from '../../../hooks/artist/useDetailsArtist';
 import { useEditArtist } from '../../../hooks/artist/useEditArtist';
 import Spinner from '../../Shared/Spinner';
 import { useCloseOnOutside } from '../../../hooks/shared/useCloseOnOutside';
 import { useModalClose } from '../../../hooks/shared/useModalClose';
 import ImageFileUpload from '../../Shared/ImageFileUpload/ImageFileUpload';
+import { useArtistEditForm } from '../../../hooks/artist/useEditFormArtist';
 
 const ArtistEditModal: React.FC<
   ArtistEditModalProps & { onSaveSuccess: () => void }
 > = ({ artistId, onClose, onSaveSuccess }) => {
-  const {
-    artist,
-    loading: loadingArtist,
-    error: errorLoadingArtist,
-  } = useDetailsArtist(artistId);
+  // --- Get form state and artist data from custom hook ---
+  const { formState, setFormState, loading, error, artist } =
+    useArtistEditForm(artistId);
 
   const {
     updateArtist,
@@ -22,55 +20,39 @@ const ArtistEditModal: React.FC<
     error: errorSaving,
   } = useEditArtist();
 
-  const [name, setName] = useState('');
-  const [nationality, setNationality] = useState('');
-  const [details, setDetails] = useState('');
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [selectedFileName, setSelectedFileName] = useState('');
-  const [localError, setLocalError] = useState<string | null>(null);
-
-  // --- Modal refs + hooks de cierre ---
+  // --- Modal refs + hooks for closing ---
   const modalRef = useRef<HTMLDialogElement>(null);
   useModalClose(onClose);
   useCloseOnOutside(modalRef, onClose);
 
-  // --- Cargar datos del artista ---
-  useEffect(() => {
-    if (!artist) return;
-
-    setName(artist.name);
-    setNationality(artist.nationality);
-    setDetails(artist.details ?? '');
-    setPhotoPreview(artist.photo ?? null);
-
-    setPhotoFile(null);
-    setSelectedFileName('');
-    setLocalError(null);
-  }, [artist]);
-
+  // --- Handle image file change ---
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setPhotoFile(file);
-    setPhotoPreview(URL.createObjectURL(file));
-    setSelectedFileName(file.name);
+
+    setFormState({
+      ...formState,
+      photoFile: file,
+      photoPreview: URL.createObjectURL(file),
+      selectedFileName: file.name,
+    });
   };
 
+  // --- Handle save action ---
   const handleSave = async () => {
     if (!artist) return;
 
-    if (!name.trim()) {
-      setLocalError('Name cannot be empty');
+    if (!formState.name.trim()) {
+      setFormState({ ...formState, localError: 'Name cannot be empty' });
       return;
     }
 
-    setLocalError(null);
+    setFormState({ ...formState, localError: null });
 
     const artistData = {
-      name,
-      nationality,
-      details,
+      name: formState.name,
+      nationality: formState.nationality,
+      details: formState.details,
     };
 
     const formData = new FormData();
@@ -78,32 +60,35 @@ const ArtistEditModal: React.FC<
       'artist',
       new Blob([JSON.stringify(artistData)], { type: 'application/json' })
     );
-    if (photoFile) formData.append('photo', photoFile);
+    if (formState.photoFile) formData.append('photo', formState.photoFile);
 
     try {
       await updateArtist(artist.id!, formData);
       onSaveSuccess();
       onClose();
     } catch {
-      setLocalError('Failed to save changes. Please try again.');
+      setFormState({
+        ...formState,
+        localError: 'Failed to save changes. Please try again.',
+      });
     }
   };
 
-  if (loadingArtist) return <Spinner />;
+  if (loading) return <Spinner />;
 
-  if (errorLoadingArtist)
+  if (error)
     return (
       <div className='fixed inset-0 z-50 flex items-center justify-center backdrop-blur-lg bg-black/40'>
-        <p className='text-red-600'>{errorLoadingArtist}</p>
+        <p className='text-red-600'>{error}</p>
       </div>
     );
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center backdrop-blur-lg bg-black/40 p-6'>
+    <div className='fixed inset-0 z-50 flex items-center justify-center backdrop-blur-lg bg-black/40'>
       <dialog
         ref={modalRef}
         open
-        className='bg-white rounded-lg shadow-lg w-full max-w-xl p-8 max-h-[90vh] overflow-y-auto relative'
+        className='bg-white rounded-lg shadow-lg w-full max-w-xl p-8 max-h-[90vh] overflow-y-auto relative text-gray-800'
       >
         <h2 className='text-xl font-semibold mb-4 text-center text-gray-800'>
           Edit Artist
@@ -112,15 +97,15 @@ const ArtistEditModal: React.FC<
         <button
           onClick={onClose}
           className='absolute top-2 right-4 text-gray-500 hover:text-gray-700 text-lg'
-          aria-label='Cerrar modal'
+          aria-label='Close modal'
           disabled={saving}
         >
           ✕
         </button>
 
-        {(localError || errorSaving) && (
+        {(formState.localError || errorSaving) && (
           <p className='text-red-600 text-sm mb-3'>
-            {localError || errorSaving}
+            {formState.localError || errorSaving}
           </p>
         )}
 
@@ -131,9 +116,9 @@ const ArtistEditModal: React.FC<
         <input
           id='artist-name'
           className='w-full border rounded-md p-2 mb-3'
-          value={name}
+          value={formState.name}
           disabled={saving}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => setFormState({ ...formState, name: e.target.value })}
         />
 
         {/* ---- NATIONALITY ---- */}
@@ -146,9 +131,11 @@ const ArtistEditModal: React.FC<
         <input
           id='artist-nationality'
           className='w-full border rounded-md p-2 mb-3'
-          value={nationality}
+          value={formState.nationality}
           disabled={saving}
-          onChange={(e) => setNationality(e.target.value)}
+          onChange={(e) =>
+            setFormState({ ...formState, nationality: e.target.value })
+          }
         />
 
         {/* ---- DETAILS ---- */}
@@ -161,17 +148,21 @@ const ArtistEditModal: React.FC<
         <textarea
           id='artist-details'
           className='w-full border rounded-md p-2 mb-4 resize-y min-h-[60px]'
-          value={details}
+          value={formState.details}
           disabled={saving}
-          onChange={(e) => setDetails(e.target.value)}
+          onChange={(e) =>
+            setFormState({ ...formState, details: e.target.value })
+          }
         />
 
         {/* ---- IMAGE ---- */}
         <ImageFileUpload
           handleFileChange={handlePhotoChange}
-          selectedFileName={selectedFileName}
-          setSelectedFileName={setSelectedFileName}
-          imagePreview={photoPreview}
+          selectedFileName={formState.selectedFileName}
+          setSelectedFileName={(name: string) =>
+            setFormState({ ...formState, selectedFileName: name })
+          }
+          imagePreview={formState.photoPreview}
         />
 
         <div className='flex justify-end gap-3 mt-6'>

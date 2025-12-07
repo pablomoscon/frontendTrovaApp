@@ -14,12 +14,7 @@ export function useScroll(
     }: UseScrollOptions = {}
 ) {
     const mountedRef = useRef(false);
-    const depsRef = useRef(deps);
     const lastDepsRef = useRef(deps);
-
-    useEffect(() => {
-        depsRef.current = deps;
-    }, [deps]);
 
     useEffect(() => {
         if (!enabled) return;
@@ -27,19 +22,18 @@ export function useScroll(
         const isFirstMount = !mountedRef.current;
         mountedRef.current = true;
 
-        const currentDeps = depsRef.current;
-        const depsChanged = currentDeps.some((d, i) => d !== lastDepsRef.current[i]);
-        lastDepsRef.current = currentDeps;
+        const depsChanged = deps.some((d, i) => d !== lastDepsRef.current[i]);
+        lastDepsRef.current = deps;
 
-        const scrollGlobal = (!target && scrollOnMount) || (isFirstMount && !target);
+        const scrollGlobal =
+            (!target && scrollOnMount) || (isFirstMount && !target);
+
         const scrollLocal = target && !isFirstMount && depsChanged;
 
         if (scrollGlobal || scrollLocal) {
             requestAnimationFrame(() => {
-                const element = target?.current;
-
-                if (element) {
-                    const rect = element.getBoundingClientRect();
+                if (target && target.current) {
+                    const rect = target.current.getBoundingClientRect();
                     const scrollTop =
                         window.pageYOffset || document.documentElement.scrollTop;
 
@@ -49,9 +43,12 @@ export function useScroll(
                         behavior,
                     });
                 } else {
-                    window.scrollTo({ top: 0, behavior });
+                    window.scrollTo({
+                        top: 0,
+                        behavior,
+                    });
                 }
             });
         }
-    }, [target, enabled, offset, behavior, scrollOnMount]);
+    }, [...deps, target, enabled, offset, behavior, scrollOnMount]);
 }
