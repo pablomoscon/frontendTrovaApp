@@ -73,9 +73,10 @@ const AlbumDetailsModal: React.FC<AlbumDetailsModalProps> = ({
                     className='bg-indigo-100 text-indigo-800 text-xs font-medium px-3 py-1 rounded-full'
                   >
                     {genre
-                      .replace(/_/g, ' ')
-                      .toLowerCase()
-                      .replace(/\b\w/g, (l) => l.toUpperCase())}
+                      .replaceAll('_', ' ')
+                      .split(' ')
+                      .map((word) => word[0].toUpperCase() + word.slice(1))
+                      .join(' ')}
                   </span>
                 ))}
               </div>
