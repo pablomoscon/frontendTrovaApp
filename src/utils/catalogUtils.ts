@@ -3,16 +3,24 @@ import type { FilterSection } from '../Interfaces/CatalogueInterface';
 
 export const normalizeArtistName = (name: string): string => {
     const lower = name.toLowerCase();
-    const cleaned = lower
-        .replace(/ y su .+$/, '')
-        .replace(/ feat\..*$/, '')
-        .replace(/\(.*\)/g, '')
-        .replace(/[^a-záéíóúüñ ]/gi, '')
+
+    let cleaned = lower.split(' y su ')[0];
+    cleaned = cleaned.split(' feat.')[0];
+    cleaned = cleaned
+        .split('(')
+        .map(part => part.split(')')[1] || '')
+        .join(' ')
+        .trim();
+    cleaned = cleaned
+        .split('')
+        .filter(c => /[a-záéíóúüñ ]/.test(c))
+        .join('')
         .trim();
 
     return cleaned
         .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .filter(Boolean)
+        .map(word => word[0].toUpperCase() + word.slice(1))
         .join(' ');
 };
 
@@ -24,7 +32,7 @@ export const getNormalizedArtists = (artistRaw: string): string[] => {
 
 const normalizeGenreName = (genre: string): string => {
     return genre
-        .replace(/_/g, ' ')
+        .replaceAll('_', ' ')
         .toLowerCase()
         .split(' ')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))

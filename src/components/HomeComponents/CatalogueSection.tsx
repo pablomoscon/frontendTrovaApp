@@ -18,12 +18,12 @@ const CatalogueSection: React.FC = () => {
         />
 
         {/* Texto */}
-        <div className='flex flex-col gap-8 justify-start items-center md:items-start text-center md:text-left'>
-          <h2 className='text-4xl sm:text-5xl font-extrabold leading-tight'>
+        <div className='flex flex-col gap-8 justify-start items-center md:items-start md:text-left'>
+          <h2 className='text-4xl sm:text-5xl font-extrabold leading-tight text-center mx-auto'>
             Explorá nuestra colección musical
           </h2>
 
-          <p className='text-lg sm:text-xl text-gray-700 leading-relaxed text-justify max-w-xl md:max-w-md mx-auto'>
+          <p className='text-lg sm:text-xl text-gray-700 leading-relaxed max-w-xl md:max-w-md mx-auto text-justify'>
             Descubrí una selección única de artistas, géneros y álbumes que
             forman parte de nuestra identidad musical.
           </p>

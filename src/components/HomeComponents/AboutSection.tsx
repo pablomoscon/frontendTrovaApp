@@ -8,12 +8,11 @@ const AboutSection: React.FC = () => (
           Sobre Nosotros
         </h2>
       </div>
-
       <p className='text-lg sm:text-xl text-gray-700 leading-relaxed max-w-3xl'>
-        En
-        <span className="font-semibold text-gray-900">
+        En{' '}
+        <span className='font-semibold text-gray-900'>
           Trova Industrias Musicales
-        </span>
+        </span>{' '}
         , celebramos la riqueza de la música popular iberoamericana. Nuestro
         objetivo es preservar, difundir y dar nueva vida a una tradición sonora
         que forma parte de nuestra identidad cultural. Reunimos artistas
