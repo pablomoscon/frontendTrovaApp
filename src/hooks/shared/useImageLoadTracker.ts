@@ -4,7 +4,7 @@ export function useImageLoadTracker(totalImages: number) {
     const [handled, setHandled] = useState(0);
 
     useEffect(() => {
-        setHandled(0); // Reset on totalImages change
+        queueMicrotask(() => setHandled(0));
     }, [totalImages]);
 
     const handleImageLoad = () => {

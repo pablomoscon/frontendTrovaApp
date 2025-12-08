@@ -9,16 +9,26 @@ export const useFetchArtistsWithAlbums = (page: number, size: number) => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        setIsLoading(true);
-        setError(null);
+        queueMicrotask(() => {
+            setIsLoading(true);
+            setError(null);
+        });
 
         fetchArtistsWithAlbums(page, size)
             .then(data => {
-                setArtists(data.content);
-                setTotalPages(data.totalPages);
+                queueMicrotask(() => {
+                    setArtists(data.content);
+                    setTotalPages(data.totalPages);
+                });
             })
-            .catch(err => setError(err.message || 'Error al cargar artistas'))
-            .finally(() => setIsLoading(false));
+            .catch(err =>
+                queueMicrotask(() =>
+                    setError(err.message || 'Error al cargar artistas')
+                )
+            )
+            .finally(() =>
+                queueMicrotask(() => setIsLoading(false))
+            );
     }, [page, size]);
 
     return { artists, totalPages, isLoading, error };

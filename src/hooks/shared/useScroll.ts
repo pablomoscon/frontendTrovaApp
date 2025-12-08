@@ -16,6 +16,8 @@ export function useScroll(
     const mountedRef = useRef(false);
     const lastDepsRef = useRef(deps);
 
+    const depsKey = JSON.stringify(deps);
+
     useEffect(() => {
         if (!enabled) return;
 
@@ -32,7 +34,7 @@ export function useScroll(
 
         if (scrollGlobal || scrollLocal) {
             requestAnimationFrame(() => {
-                if (target && target.current) {
+                if (target?.current) {
                     const rect = target.current.getBoundingClientRect();
                     const scrollTop =
                         window.pageYOffset || document.documentElement.scrollTop;
@@ -43,12 +45,10 @@ export function useScroll(
                         behavior,
                     });
                 } else {
-                    window.scrollTo({
-                        top: 0,
-                        behavior,
-                    });
+                    window.scrollTo({ top: 0, behavior });
                 }
             });
         }
-    }, [...deps, target, enabled, offset, behavior, scrollOnMount]);
+    }, [deps, depsKey, target, enabled, offset, behavior, scrollOnMount]);
+
 }
