@@ -40,8 +40,11 @@ export const useSearchAlbumsResults = (
      */
     useEffect(() => {
         const isValid = searchTerm.trim() !== '';
-        setHasSearched(isValid);
-        if (!isValid) setPage(1);
+
+        queueMicrotask(() => {
+            setHasSearched(isValid);
+            if (!isValid) setPage(1);
+        });
     }, [searchTerm, setPage]);
 
     /**

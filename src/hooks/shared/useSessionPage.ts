@@ -33,7 +33,7 @@ export function useSessionPage(key: string, routeKey = 'ruta'): [number, (p: num
         if (!isSameRouteGroup(savedRoute, pathname)) {
             sessionStorage.removeItem(key);
             sessionStorage.setItem(routeKey, pathname);
-            setPageState(1);
+            queueMicrotask(() => setPageState(1));
         }
     }, [pathname, key, routeKey]);
 

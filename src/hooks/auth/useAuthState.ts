@@ -1,16 +1,15 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { User } from "../../Interfaces/UserInterface";
 import { getValidUserOrNull } from "../../utils/validateUserTokenUtils";
 import { clearUser, loadStoredUser, saveUser } from "../../services/authService";
+import { isTokenExpired } from "../../utils/tokenUtils";
 
 export const useAuthState = () => {
-    // Inicializar desde localStorage y validar
     const [user, setUser] = useState<User | null>(() => {
         const stored = loadStoredUser();
         return getValidUserOrNull(stored);
     });
 
-    // login y logout memoizados para no romper useMemo del provider
     const login = useCallback((userData: User) => {
         saveUser(userData);
         setUser(userData);
@@ -21,5 +20,11 @@ export const useAuthState = () => {
         setUser(null);
     }, []);
 
-    return { user, login, logout };
+    useEffect(() => {
+        if (user && isTokenExpired(user.token)) {
+            queueMicrotask(() => logout());
+        }
+    }, [user, logout]);
+    
+    return { user, login, logout, setUser };
 };

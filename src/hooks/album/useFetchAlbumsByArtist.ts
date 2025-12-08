@@ -29,20 +29,26 @@ export const useFetchAlbumsByArtist = (
 
     useEffect(() => {
         if (artistId === null) return;
-        if (!pageSizeReady) return; 
+        if (!pageSizeReady) return;
 
-        setLoading(true);
+        queueMicrotask(() => setLoading(true));
+
         fetchAlbumsByArtist(artistId, page - 1, pageSize, sortOrder)
             .then((data: AlbumsByArtistResponse) => {
-                setAlbums(data.albums);
-                setTotalPages(data.totalPages);
-                setError(null);
+                queueMicrotask(() => {
+                    setAlbums(data.albums);
+                    setTotalPages(data.totalPages);
+                    setError(null);
+                });
             })
             .catch(() => {
-                setError('Error fetching albums by artist');
+                queueMicrotask(() => setError('Error fetching albums by artist'));
             })
-            .finally(() => setLoading(false));
+            .finally(() => {
+                queueMicrotask(() => setLoading(false));
+            });
     }, [artistId, page, pageSize, sortOrder, pageSizeReady]);
+
 
     return {
         albums,

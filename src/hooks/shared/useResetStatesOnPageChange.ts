@@ -1,7 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
-export function useResetStatesOnPageChange(page: number, resetFns: (() => void)[]) {
+export function useResetStatesOnPageChange(
+    page: number,
+    resetFns: (() => void)[]
+) {
+    const stableFns = useRef(resetFns);
+
     useEffect(() => {
-        resetFns.forEach(reset => reset());
+        stableFns.current = resetFns;
+    }, [resetFns]);
+
+    useEffect(() => {
+        stableFns.current.forEach((fn) => fn());
     }, [page]);
 }

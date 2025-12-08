@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useAuthContext } from '../../../hooks/auth/useAuthContext.ts';
 import { useLocation, useNavigate } from 'react-router-dom';
 import NavbarLogo from './NavbarLogo.tsx';
@@ -18,11 +18,11 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const closeAllMenus = () => {
-    setMenuOpen(false);
-    setUserMenuOpen(false);
-    setSearchOpen(false);
-  };
+const closeAllMenus = useCallback(() => {
+  setMenuOpen(false);
+  setUserMenuOpen(false);
+  setSearchOpen(false);
+}, []);
 
   useNavbarEffects({
     wrapperRef,

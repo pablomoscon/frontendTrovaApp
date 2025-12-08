@@ -51,7 +51,6 @@ export const showSignupErrorAlert = () => {
   });
 };
 
-
 export const showLoginSuccessAlert = () => {
   return Swal.fire({
     title: 'Ingreso exitoso',
